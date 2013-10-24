@@ -42,41 +42,6 @@ function OrderModel() {
 	}
 }
 
-var cookieWrapper = {
-	put:function(c_name, value, exdays) {
-		var exdate=new Date();
-		exdate.setDate(exdate.getDate() + exdays);
-		var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
-		document.cookie=c_name + "=" + c_value;
-	},
-	get:function(c_name) {
-		var c_value = document.cookie;
-		var c_start = c_value.indexOf(" " + c_name + "=");
-
-		if (c_start == -1) {
-			c_start = c_value.indexOf(c_name + "=");
-		}
-		
-		if (c_start == -1) {
-			c_value = null;
-		}
-		else {
-			c_start = c_value.indexOf("=", c_start) + 1;
-			var c_end = c_value.indexOf(";", c_start);
-			if (c_end == -1) {
-				c_end = c_value.length;
-			}
-			
-			c_value = unescape(c_value.substring(c_start,c_end));
-		}
-		return c_value;
-	},
-	remove:function(c_name) {
-		
-	}
-}
-
-
 mod.factory('appModel', function() {
 	return new AppModel();
 });
@@ -88,11 +53,6 @@ mod.factory('orderModel', function() {
 mod.factory('ws', function() {
 	return new AutobahnWebSocket();
 }); 
-
-mod.factory('cookie', function() {
-	return cookieWrapper;
-});
-
 
 mod.controller('ScanController', function($scope, $location, appModel) {
 	$scope.scanLocation = function() {
@@ -185,7 +145,16 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 	
 	$scope.menu = appModel.data.menu;
 	$scope.locationName = appModel.data.location.name;
-
+	
+	// check if we have an open order
+	// by looking for an existing order id
+	this.storage = window.localStorage;
+	var oid = this.storage.getItem('order_id');
+	if(oid != null) {
+		var msg = {command:'GET_ORDER',data:{orderid:oid}}
+		ws.send(JSON.stringify(msg));
+	}
+	
 	$scope.onAddItem = function(index) {
 		var item = appModel.data.menu[index];
 		orderModel.data.items.push(item);
@@ -235,12 +204,19 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 	
 	this.handler = {
 		'ORDER_UPDATE' : function(data) {
+			if(data == null) {
+				_this.storage.removeItem('order_id');
+				return;
+			}
 			orderModel.data = data;
 			$scope.$apply(function() {
 				$scope.items = orderModel.data.items;
 				$scope.orderTotal = orderModel.data.total;
 				$scope.orderStatus = orderModel.data.status;	
 				$scope.orderId = orderModel.data.orderid;
+				
+				// store the order id into a cookie
+				_this.storage.setItem('order_id', orderModel.data.orderid);
 			});
 			
 		}
@@ -255,9 +231,9 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 	}
 	
 	ws.onerror = function(err) {
-		alert(err);
+		alert("WSERROR: " + err);
+		$scope.$apply(function() {
+			$location.path('/scan');
+		});
 	}
-	
-	//var host = appModel.data.config['wshost'];
-	//ws.connect(host);
 });
