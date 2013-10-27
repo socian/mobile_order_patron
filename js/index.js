@@ -37,6 +37,7 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
+    	new FastClick(document.body);
     	angular.bootstrap(document, ["orderApp"]);
     }
 };

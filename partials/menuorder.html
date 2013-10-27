@@ -1,26 +1,56 @@
-<button ng-click="onRescanLocation()">Back</button>
-<h1>{{locationName}}</h1>
-<h3>Order</h3>
-<ul>
-	<li ng-repeat="item in items track by $index">{{item.name}} {{item.price}} EUR<button ng-show="orderStatus == 0" ng-click="onRemoveItem($index)">Remove</button></li>
-</ul>
-<div>
-	Total: {{orderTotal}} EUR
-</div>
-<div>
-	Status: {{orderStatus}}
-</div>
-<div ng-show="orderStatus > 0">
-	Order ID: {{orderId}}
-</div>
-<div ng-show="orderTotal > 0">
-	<button ng-show="orderStatus == 0" ng-click="onClearOrder()">Clear</button>&nbsp;<button ng-show="orderStatus == 0" ng-click="onSubmitOrder()">Submit</button>
-</div>
+<div class="container">
+	<h1>{{locationName}}</h1>
+	<h5>{{locationAddress}}</h5>
+	<div style="padding-bottom:10px"></div>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Order</h3>
+		</div>
+		<div class="panel-body">
+			
+			<table class="table table-striped">
+  				<tr ng-repeat="item in items track by $index">
+  					<td>{{item.name}}</td>
+  					<td>{{item.price}}</td>
+  					<td><button class="btn btn-primary" ng-show="orderStatus == 0" ng-click="onRemoveItem($index)">Remove</button></td>
+  				</tr>
+			</table>
+		
+			<div>
+				<h4>Total: {{orderTotal}} EUR</h4>
+			</div>
+			<div ng-show="{{orderStatus > 0}}">
+				Status: {{orderStatus}}
+			</div>
 
-<h3>Menu</h3>
-<ul>
-	<li ng-repeat="item in menu">
-		{{item.name}} {{item.price}} EUR <button ng-show="orderStatus == 0" ng-click="onAddItem($index)">Add</button>
-	</li>
-</ul>
+			<div ng-show="orderTotal > 0">
+				<button class="btn btn-primary" ng-show="orderStatus == 0" ng-click="onClearOrder()">
+					Clear
+				</button>
+				&nbsp;
+				<button class="btn btn-primary" ng-show="orderStatus == 0" ng-click="onSubmitOrder()">
+					Submit
+				</button>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h5 class="panel-title">Menu</h3>
+		</div>
+		<div class="panel-body">
+			
+			<table class="table table-striped">
+				<tr ng-repeat="item in menu">
+					<td>{{item.name}}</td>
+					<td>{{item.price}} EUR</td>
+					<td><button class="btn btn-primary" ng-show="orderStatus == 0" ng-click="onAddItem($index)">Add</button></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+</div>
 

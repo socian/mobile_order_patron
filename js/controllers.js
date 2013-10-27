@@ -54,6 +54,13 @@ mod.factory('ws', function() {
 	return new AutobahnWebSocket();
 }); 
 
+mod.controller('NavigationController', function($scope, $location) {
+	$scope.onClickScan = function() {
+		if(! confirm('Do you want to leave this page?')) return
+		$location.path('/scan');	
+	}
+});
+
 mod.controller('ScanController', function($scope, $location, appModel) {
 	$scope.scanLocation = function() {
 		
@@ -79,26 +86,30 @@ mod.controller('ScanController', function($scope, $location, appModel) {
 mod.controller('InitializeController', function($scope, $http, $location, appModel, ws) {
 	
 	var _this = this;
-	
+	$scope.status = "";
 	this.loadAppData = function() {
-		//$http.get( "http://192.168.2.4/moframe/platforms/android/assets/www/cupsbandung.json" ).success(function(data) {
+		$scope.status = "Loading application data";
+		//$http.get( "http://192.168.2.4/mobile_order_club/platforms/android/assets/www/cupsbandung.json" ).success(function(data) {
 		$http.get( appModel.data.path ).success(function(data) {
-			alert('data loaded');
 			appModel.data.location = data.location;
 			appModel.data.menu = data.menu;
 			appModel.data.config = data.config;
 			
+			/*
 			if(confirm('Please confirm this location: ' + appModel.data.location.name)) {
 				_this.checkInternetConnection();	
 			}
+			
 			else $location.path('/scan');
+			*/
+			_this.checkInternetConnection();
 		});
 		
 	}
 	
 	// if the wifiCheck is set true check the internet connection
 	this.checkInternetConnection = function() {
-		alert('check internet connection');
+		$scope.status = "Checking internet connection";
 		if(appModel.data.config['wificheck'] == "true") {
 			// check the internet connection	
 			
@@ -115,9 +126,8 @@ mod.controller('InitializeController', function($scope, $http, $location, appMod
 	}
 	
 	this.createWSConnection = function() {
-		alert("create ws connection");
+		$scope.status = "Create the web socket connection";
 		ws.onopen = function() {
-			alert('connection is open :-)');
 			$scope.$apply(function() {
 				$location.path('/menuorder');	
 			})
@@ -125,6 +135,9 @@ mod.controller('InitializeController', function($scope, $http, $location, appMod
 		
 		ws.onerror= function(err) {
 			alert(err);
+			$scope.$apply(function() {
+				$location.path('/scan');
+			});
 		}
 		
 		var host = appModel.data.config['wshost'];
@@ -145,15 +158,7 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 	
 	$scope.menu = appModel.data.menu;
 	$scope.locationName = appModel.data.location.name;
-	
-	// check if we have an open order
-	// by looking for an existing order id
-	this.storage = window.localStorage;
-	var oid = this.storage.getItem('order_id');
-	if(oid != null) {
-		var msg = {command:'GET_ORDER',data:{orderid:oid}}
-		ws.send(JSON.stringify(msg));
-	}
+	$scope.locationAddress = appModel.data.location.address;
 	
 	$scope.onAddItem = function(index) {
 		var item = appModel.data.menu[index];
@@ -210,6 +215,7 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 			}
 			orderModel.data = data;
 			$scope.$apply(function() {
+				
 				$scope.items = orderModel.data.items;
 				$scope.orderTotal = orderModel.data.total;
 				$scope.orderStatus = orderModel.data.status;	
@@ -236,4 +242,15 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 			$location.path('/scan');
 		});
 	}
+	
+	// check if we have an open order
+	// by looking for an existing order id
+	this.storage = window.localStorage;
+	var oid = this.storage.getItem('order_id');
+	
+	if(oid != null) {
+		var msg = {command:'GET_ORDER',data:{orderid:oid}}
+		ws.send(JSON.stringify(msg));
+	}
+	
 });

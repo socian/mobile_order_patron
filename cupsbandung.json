@@ -1,6 +1,8 @@
 {
 	"location":{
-		"name" : "Cups Bandung"
+		"name" : "Cups Bandung",
+		"address" : "Jl. Trunojoyo 25, Bandung",
+		"opentime" : ""
 	},
 	
 	"menu":[
