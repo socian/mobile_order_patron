@@ -244,7 +244,7 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 	}
 	
 	// check if we have an open order
-	// by looking for an existing order id
+	// by looking for the existing order id
 	this.storage = window.localStorage;
 	var oid = this.storage.getItem('order_id');
 	

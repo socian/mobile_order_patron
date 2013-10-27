@@ -37,7 +37,16 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
+    	
+    	// 
     	new FastClick(document.body);
+    	
+    	// make the navbar toggle after clicking items
+    	$('.nav a').on('click', function(){
+    		$(".navbar-toggle").click();
+		});
+		
+		// star the angular framework
     	angular.bootstrap(document, ["orderApp"]);
     }
 };

@@ -10,9 +10,9 @@
 			
 			<table class="table table-striped">
   				<tr ng-repeat="item in items track by $index">
-  					<td>{{item.name}}</td>
-  					<td>{{item.price}}</td>
-  					<td><button class="btn btn-primary" ng-show="orderStatus == 0" ng-click="onRemoveItem($index)">Remove</button></td>
+  					<td><h4>{{item.name}}</h4></td>
+  					<td><h4>{{item.price}}</h4></td>
+  					<td><button class="btn btn-default" ng-show="orderStatus == 0" ng-click="onRemoveItem($index)">Rem</button></td>
   				</tr>
 			</table>
 		
@@ -24,12 +24,12 @@
 			</div>
 
 			<div ng-show="orderTotal > 0">
-				<button class="btn btn-primary" ng-show="orderStatus == 0" ng-click="onClearOrder()">
+				<button class="btn btn-warning" ng-show="orderStatus == 0" ng-click="onClearOrder()">
 					Clear
 				</button>
 				&nbsp;
-				<button class="btn btn-primary" ng-show="orderStatus == 0" ng-click="onSubmitOrder()">
-					Submit
+				<button class="btn btn-info" ng-show="orderStatus == 0" ng-click="onSubmitOrder()">
+					Order
 				</button>
 			</div>
 
@@ -44,9 +44,9 @@
 			
 			<table class="table table-striped">
 				<tr ng-repeat="item in menu">
-					<td>{{item.name}}</td>
-					<td>{{item.price}} EUR</td>
-					<td><button class="btn btn-primary" ng-show="orderStatus == 0" ng-click="onAddItem($index)">Add</button></td>
+					<td><h4>{{item.name}}</h4></td>
+					<td><h4>{{item.price}}</h4></td>
+					<td><button class="btn btn-default" ng-show="orderStatus == 0" ng-click="onAddItem($index)">Add</button></td>
 				</tr>
 			</table>
 		</div>
