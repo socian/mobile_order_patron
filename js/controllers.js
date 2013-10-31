@@ -56,7 +56,7 @@ mod.factory('ws', function() {
 
 mod.controller('NavigationController', function($scope, $location) {
 	$scope.onClickScan = function() {
-		if(! confirm('Do you want to leave this page?')) return
+		if(! confirm('Do you want to leave this page?')) return;
 		$location.path('/scan');	
 	}
 });
@@ -65,7 +65,7 @@ mod.controller('ScanController', function($scope, $location, appModel) {
 	$scope.scanLocation = function() {
 		
 		// dev shortcut
-		appModel.data.path = "cupsbandung.json";
+		appModel.data.path = "herbertzstuttgart";
 		$location.path('/initialize');
 		return;
 		
@@ -89,8 +89,9 @@ mod.controller('InitializeController', function($scope, $http, $location, appMod
 	$scope.status = "";
 	this.loadAppData = function() {
 		$scope.status = "Loading application data";
-		//$http.get( "http://192.168.2.4/mobile_order_club/platforms/android/assets/www/cupsbandung.json" ).success(function(data) {
-		$http.get( appModel.data.path ).success(function(data) {
+		//$http.get( "http://192.168.2.4/socian_venues/" + appModel.data.path + "/data.json").success(function(data) {
+		$http.get( "http://192.168.2.4/socian_venues/herbertzstuttgart/data.json").success(function(data) {
+		//$http.get( appModel.data.path ).success(function(data) {
 			appModel.data.location = data.location;
 			appModel.data.menu = data.menu;
 			appModel.data.config = data.config;

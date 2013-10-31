@@ -1,0 +1,26 @@
+{
+	"location":{
+		"name" : "Herbert'z",
+		"address" : "Immenhofer Straße 13 , 70180 Stuttgart",
+		"opentime" : ""
+	},
+	
+	"menu":[
+		{"name":"Grosser Milchkaffee", "price":"2.50"},
+		{"name":"Kleiner Milchkaffee", "price":"2.50"},
+		{"name":"Cappuccino", "price":"2.50"},
+		{"name":"Grüner Tee", "price":"2.00"},
+		{"name":"Schwarzer Tee", "price":"2.00"},
+		{"name":"Kakao", "price":"1.50"},
+		{"name":"Frischer Orangensaft", "price":"2.00"}	
+	],
+	
+	"config":{
+		"wshost":"ws://192.168.2.4:8080",
+		"wsprotocol":"echo-protocol",
+		"currency" : "euro",
+		"currencylabel" : "€",
+		"ordertotalmax" : "20",
+		"wificheck" : "true"
+	}
+}
