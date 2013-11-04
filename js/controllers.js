@@ -252,29 +252,7 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 				_this.storage.setItem('order_id', orderModel.data.orderid);
 			});		
 	}
-	
-	/*
-	this.handler = {
-		'ORDER_UPDATE' : function(data) {
-			if(data == null) {
-				_this.storage.removeItem('order_id');
-				return;
-			}
-			orderModel.data = data;
-			$scope.$apply(function() {
-				
-				$scope.items = orderModel.data.items;
-				$scope.orderTotal = orderModel.data.total;
-				$scope.orderStatus = orderModel.data.status;	
-				$scope.orderId = orderModel.data.orderid;
-				
-				// store the order id into a cookie
-				_this.storage.setItem('order_id', orderModel.data.orderid);
-			});
-		}
-	}
-	*/
-	
+
 	ws.onmessage = function(message) {
 		var msg = angular.fromJson(message);
 		var handler = _this.handler[msg.command];
