@@ -42,6 +42,8 @@ function OrderModel() {
 	}
 }
 
+
+
 mod.factory('appModel', function() {
 	return new AppModel();
 });
@@ -65,9 +67,9 @@ mod.controller('ScanController', function($scope, $location, appModel) {
 	$scope.scanLocation = function() {
 		
 		// dev shortcut
-		//appModel.data.path = "herbertzstuttgart";
-		//$location.path('/initialize');
-		//return;
+		appModel.data.path = "herbertzstuttgart";
+		$location.path('/initialize');
+		return;
 		
 		cordova.plugins.barcodeScanner.scan(function(result) {
 			if(result.cancelled) return;
@@ -89,9 +91,12 @@ mod.controller('InitializeController', function($scope, $http, $location, appMod
 	$scope.status = "";
 	this.loadAppData = function() {
 		$scope.status = "Loading application data";
-		//$http.get( "http://192.168.2.4/socian_venues/" + appModel.data.path + "/data.json").success(function(data) {
-		$http.get( "http://192.168.2.4/socian_venues/" + appModel.data.path + "/data.json").success(function(data) {
-		//$http.get( appModel.data.path ).success(function(data) {
+		
+		// TODO:
+		// replace this with the production server or test server
+		var dataPath = "http://192.168.2.4/socian_venues/" + appModel.data.path + "/data.json?r=" + Math.random(1);
+		
+		$http.get( dataPath ).success(function(data) {
 			appModel.data.location = data.location;
 			appModel.data.menu = data.menu;
 			appModel.data.config = data.config;
@@ -149,9 +154,28 @@ mod.controller('InitializeController', function($scope, $http, $location, appMod
 	this.loadAppData();
 });
 
+
+//-------------------------------------------------------------//
+//      Commands for communicating with the order server
+//-------------------------------------------------------------//
+
+// TODO:
+// outsource this in an external file that can be included
+// by the server, patron and staff 
+var OrderCommand = {
+	REGISTER_STAFF : "registerStaff",
+	NEW_ORDER : "newOrder",
+	GET_ORDER : "getOrder",
+	GET_ORDER_LIST : "getOrderList",
+	UPDATE_ORDER_STATUS_READY : "updateOrderStatusReady",
+	UPDATE_ORDER_STATUS_COMPLETE : "updateOrderStatusComplete",
+	ORDER_UPDATE : "orderUpdate"
+}
+
 mod.controller('OrderController', function($scope, $http, $location, appModel, orderModel, ws) {
 	
 	var _this = this;
+	
 		
 	orderModel.clear();
 	$scope.orderTotal = orderModel.data.total;
@@ -196,7 +220,9 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 		
 		if(! confirm( msg )) return;
 		
-		var msg = {command:'NEW_ORDER', data:orderModel.data }
+		
+		
+		var msg = {command:OrderCommand.NEW_ORDER, data:orderModel.data }
 		ws.send( JSON.stringify(msg) );
 	}
 	
@@ -204,10 +230,30 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 		$location.path('/scan');
 	}
 	
-	//--------------------//
-	// web socket
-	//--------------------//
+	//--------------------------//
+	//    web socket section
+	//--------------------------//
 	
+	this.handler = {}
+	this.handler[ OrderCommand.ORDER_UPDATE ] = function(data) {
+		if(data == null) {
+				_this.storage.removeItem('order_id');
+				return;
+			}
+			orderModel.data = data;
+			$scope.$apply(function() {
+				
+				$scope.items = orderModel.data.items;
+				$scope.orderTotal = orderModel.data.total;
+				$scope.orderStatus = orderModel.data.status;	
+				$scope.orderId = orderModel.data.orderid;
+				
+				// store the order id into a cookie
+				_this.storage.setItem('order_id', orderModel.data.orderid);
+			});		
+	}
+	
+	/*
 	this.handler = {
 		'ORDER_UPDATE' : function(data) {
 			if(data == null) {
@@ -225,9 +271,9 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 				// store the order id into a cookie
 				_this.storage.setItem('order_id', orderModel.data.orderid);
 			});
-			
 		}
 	}
+	*/
 	
 	ws.onmessage = function(message) {
 		var msg = angular.fromJson(message);
@@ -250,7 +296,7 @@ mod.controller('OrderController', function($scope, $http, $location, appModel, o
 	var oid = this.storage.getItem('order_id');
 	
 	if(oid != null) {
-		var msg = {command:'GET_ORDER',data:{orderid:oid}}
+		var msg = {command:OrderCommand.GET_ORDER,data:{orderid:oid}}
 		ws.send(JSON.stringify(msg));
 	}
 	
