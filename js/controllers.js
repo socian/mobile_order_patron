@@ -67,9 +67,9 @@ mod.controller('ScanController', function($scope, $location, appModel) {
 	$scope.scanLocation = function() {
 		
 		// dev shortcut
-		appModel.data.path = "herbertzstuttgart";
-		$location.path('/initialize');
-		return;
+		//appModel.data.path = "herbertzstuttgart";
+		//$location.path('/initialize');
+		//return;
 		
 		cordova.plugins.barcodeScanner.scan(function(result) {
 			if(result.cancelled) return;
